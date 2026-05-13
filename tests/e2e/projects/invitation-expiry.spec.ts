@@ -7,12 +7,12 @@ test.describe("Invitation expiry logic", () => {
     const title = test.info().title;
     console.log(`[Test: ${title}] Testing invitation expiry via API...`);
 
-    // The seed data has seed-participant-2 with an expired invitation
+    // The seed data has seed-participant-4 with an expired invitation (dedicated for this API test)
     // Try to resend invitation
     const resendRes = await request.patch(
       "/api/projects/seed-project-1/invitations",
       {
-        data: { participantId: "seed-participant-2" },
+        data: { participantId: "seed-participant-4" },
       }
     );
 

@@ -173,6 +173,31 @@ async function main() {
     },
   });
 
+  // Seed Participant 4 (with expired invitation - for invitation-expiry API test)
+  const seedParticipant4 = await prisma.participant.upsert({
+    where: { id: 'seed-participant-4' },
+    update: {},
+    create: {
+      id: 'seed-participant-4',
+      name: 'Participant Four',
+      email: 'participant4@example.com',
+      batchId: 'seed-batch-1',
+    },
+  });
+
+  // Seed Invitation 4 (expired - for invitation-expiry API test)
+  const seedInvitation4 = await prisma.invitation.upsert({
+    where: { id: 'seed-invitation-4' },
+    update: {},
+    create: {
+      id: 'seed-invitation-4',
+      participantId: 'seed-participant-4',
+      status: 'expired',
+      sentAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    },
+  });
+
   // Seed Project Event
   const seedEvent1 = await prisma.projectEvent.upsert({
     where: { id: 'seed-event-1' },
@@ -189,8 +214,8 @@ async function main() {
     originalAdmin, testAdmin, testUser,
     seedAssessor1, seedAssessor2, seedAssessor3,
     seedProject1, seedBatch1,
-    seedParticipant1, seedParticipant2, seedParticipant3,
-    seedInvitation1, seedInvitation2,
+    seedParticipant1, seedParticipant2, seedParticipant3, seedParticipant4,
+    seedInvitation1, seedInvitation2, seedInvitation4,
     seedEvent1,
   });
 }
