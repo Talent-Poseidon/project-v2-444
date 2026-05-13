@@ -9,6 +9,7 @@ import {
   Shield,
   LogOut,
   ChevronDown,
+  FolderOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -70,17 +71,31 @@ export function DashboardShell({ user, profile, children }: DashboardShellProps)
               );
             })}
             {profile.role === "admin" && (
-              <Link
-                href="/admin"
-                className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  pathname.startsWith("/admin")
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <Shield className="h-4 w-4" />
-                Admin
-              </Link>
+              <>
+                <Link
+                  href="/admin"
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    pathname === "/admin"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Shield className="h-4 w-4" />
+                  Admin
+                </Link>
+                <Link
+                  href="/admin/projects"
+                  data-testid="projects-nav-link"
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    pathname.startsWith("/admin/projects")
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <FolderOpen className="h-4 w-4" />
+                  Projects
+                </Link>
+              </>
             )}
           </nav>
 
@@ -118,13 +133,22 @@ export function DashboardShell({ user, profile, children }: DashboardShellProps)
                 Profile
               </Menu.Item>
               {profile.role === "admin" && (
-                <Menu.Item
-                  component={Link}
-                  href="/admin"
-                  leftSection={<Shield className="h-4 w-4" />}
-                >
-                  Admin Panel
-                </Menu.Item>
+                <>
+                  <Menu.Item
+                    component={Link}
+                    href="/admin"
+                    leftSection={<Shield className="h-4 w-4" />}
+                  >
+                    Admin Panel
+                  </Menu.Item>
+                  <Menu.Item
+                    component={Link}
+                    href="/admin/projects"
+                    leftSection={<FolderOpen className="h-4 w-4" />}
+                  >
+                    Projects
+                  </Menu.Item>
+                </>
               )}
               <Menu.Divider />
               <form action={signOutAction}>
