@@ -135,6 +135,18 @@ async function main() {
     },
   });
 
+  // Seed Participant 3 (no invitation - for bulk send test)
+  const seedParticipant3 = await prisma.participant.upsert({
+    where: { id: 'seed-participant-3' },
+    update: {},
+    create: {
+      id: 'seed-participant-3',
+      name: 'Participant Three',
+      email: 'participant3@example.com',
+      batchId: 'seed-batch-1',
+    },
+  });
+
   // Seed Invitation (sent, not expired)
   const seedInvitation1 = await prisma.invitation.upsert({
     where: { id: 'seed-invitation-1' },
@@ -177,7 +189,7 @@ async function main() {
     originalAdmin, testAdmin, testUser,
     seedAssessor1, seedAssessor2, seedAssessor3,
     seedProject1, seedBatch1,
-    seedParticipant1, seedParticipant2,
+    seedParticipant1, seedParticipant2, seedParticipant3,
     seedInvitation1, seedInvitation2,
     seedEvent1,
   });

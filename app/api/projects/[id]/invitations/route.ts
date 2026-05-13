@@ -43,20 +43,11 @@ export async function POST(
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    // Send invitations to participants who don't have one or whose invitation expired
+    // Send invitations only to participants who don't have any invitation yet
+    // Expired invitations are handled individually via PATCH (resend)
     const results = [];
     for (const participant of allParticipants) {
-      if (
-        !participant.invitation ||
-        participant.invitation.status === "expired"
-      ) {
-        if (participant.invitation) {
-          // Delete old expired invitation
-          await prisma.invitation.delete({
-            where: { id: participant.invitation.id },
-          });
-        }
-
+      if (!participant.invitation) {
         const invitation = await prisma.invitation.create({
           data: {
             participantId: participant.id,
