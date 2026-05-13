@@ -48,7 +48,7 @@ model User {
   password      String?   // Hashed password for Credentials provider
   role          String    @default("user") // "user" | "admin"
   is_approved   Boolean   @default(false)  // Approval logic replacement
-  
+
   accounts      Account[]
   sessions      Session[]
 }
@@ -59,4 +59,84 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Project Management Models
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      String   @default("draft") // draft, active, completed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  batches   Batch[]
+  assessors ProjectAssessor[]
+  events    ProjectEvent[]
+}
+
+model Batch {
+  id        String   @id @default(cuid())
+  name      String
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants Participant[]
+}
+
+model Participant {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  batchId   String
+  batch     Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invitation Invitation?
+}
+
+model Invitation {
+  id            String      @id @default(cuid())
+  participantId String      @unique
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  status        String      @default("pending") // pending, sent, accepted, expired
+  sentAt        DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model ProjectAssessor {
+  id             String   @id @default(cuid())
+  projectId      String
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  masterAssessorId String
+  masterAssessor MasterAssessor @relation(fields: [masterAssessorId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([projectId, masterAssessorId])
+}
+
+model ProjectEvent {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type      String   // submit_project, assessee_notified, assessor_assigned
+  payload   String?  @db.Text
+  createdAt DateTime @default(now())
+}
+
+model MasterAssessor {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectAssessors ProjectAssessor[]
 }
